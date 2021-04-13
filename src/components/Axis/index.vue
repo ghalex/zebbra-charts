@@ -65,13 +65,14 @@ export default defineComponent({
       if (chart.data.length > 0) {
         const { linearScale } = chart.scales
         const ax: any = axis.value(linearScale).tickFormat(formatFn)
+        const size = chart.config.direction === 'horizontal' ? chart.canvas.height : chart.canvas.width
 
         if (props.ticks > -1) {
           ax.ticks(props.ticks)
         } else if (props.tickValues) {
           ax.tickValues(props.tickValues)
         } else {
-          ax.ticks(Math.round(chart.canvas.height / 60))
+          ax.ticks(Math.round(size / 65))
         }
 
         select(el.value).call(ax)

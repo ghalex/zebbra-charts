@@ -25,10 +25,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import { line, curveLinear, curveStep, curveNatural, curveMonotoneX } from 'd3-shape'
+import { computed, defineComponent, watch, ref } from 'vue'
+import { line, curveLinear, curveStepAfter, curveNatural, curveMonotoneX, curveMonotoneY } from 'd3-shape'
 import { Point } from '@/types'
-import { useMouse, usePoints } from '@/hooks'
+import { useChart, useMouse, usePoints } from '@/hooks'
 import Layer from '../Layer/index.vue'
 
 export default defineComponent({
@@ -66,20 +66,29 @@ export default defineComponent({
   },
   setup(props) {
     const mouse = useMouse()
+    const chart = useChart()
+    const d = ref<string | null>('')
     const lineType = {
       normal: curveLinear,
       natural: curveNatural,
-      step: curveStep,
+      step: curveStepAfter,
       monotone: curveMonotoneX
     }
 
-    const buildLine = line<Point>()
-      .x((p) => p.x)
-      .y((p) => p.y)
-      .curve(lineType[props.type])
-
     const { points } = usePoints(props.dataKey)
-    const d = computed(() => buildLine(points.value))
+
+    function updateLine() {
+      let type = lineType[props.type]
+
+      if (props.type === 'monotone' && chart.config.direction === 'vertical') {
+        type = curveMonotoneY
+      }
+
+      d.value = line<Point>()
+        .x((p) => p.x)
+        .y((p) => p.y)
+        .curve(type)(points.value)
+    }
 
     const dotProps = computed(() => ({
       stroke: props.stroke,
@@ -94,13 +103,16 @@ export default defineComponent({
       ...props.activeDot
     }))
 
+    watch(points, () => updateLine())
+    watch(chart.updates, () => updateLine())
+
     return { d, mouse, points, dotProps, dotActiveProps }
   }
 })
 </script>
 
 <style scoped>
-.path {
+/* .path {
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
   animation: dash 1s linear forwards;
@@ -110,5 +122,5 @@ export default defineComponent({
   to {
     stroke-dashoffset: 0;
   }
-}
+} */
 </style>

@@ -3,6 +3,14 @@ export interface Point {
   y: number
 }
 
+export interface Rectangle {
+  x: number
+  y: number
+  width: number
+  height: number
+  props: any
+}
+
 export interface Margin {
   top: number
   right: number

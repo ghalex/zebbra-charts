@@ -2,8 +2,9 @@
   <div id="app">
     <Chart :data="data" :config="config">
       <template #layers>
+        <Bar dataKey="avg" />
         <Line dataKey="pl" stroke="red" />
-        <Line dataKey="avg" />
+        <Line dataKey="avg" type="step" />
       </template>
     </Chart>
     <div>
@@ -45,6 +46,10 @@ export default defineComponent({
     function updateConfig() {
       const newConfig: Partial<ChartConfig> = {
         ...config.value,
+        // size: {
+        //   width: 320,
+        //   height: 400
+        // },
         direction: config.value.direction === 'horizontal' ? 'vertical' : 'horizontal'
       }
 

@@ -39,10 +39,6 @@ export default (dataKey: string): Return => {
     updatePoints()
   })
 
-  // onMounted(() => {
-  //   updatePoints()
-  // })
-
   return {
     points
   }
