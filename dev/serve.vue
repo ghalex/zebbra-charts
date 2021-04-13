@@ -2,8 +2,9 @@
   <div id="app">
     <Chart :data="data" :config="config">
       <template #layers>
+        <Grid strokeDasharray="2,2" />
         <Bar dataKey="avg" />
-        <Line dataKey="pl" stroke="red" />
+        <!-- <Line dataKey="pl" stroke="red" /> -->
         <Line dataKey="avg" type="step" />
       </template>
     </Chart>
@@ -30,7 +31,8 @@ export default defineComponent({
         right: 20,
         bottom: 20
       },
-      direction: 'horizontal'
+      direction: 'horizontal',
+      domain: ['dataMin - 100', 'dataMax + 100']
     })
 
     function add() {

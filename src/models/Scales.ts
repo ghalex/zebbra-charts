@@ -1,16 +1,16 @@
-import { Canvas, Data } from '@/types'
+import { Canvas, Data, Domain } from '@/types'
 import { extent } from 'd3-array'
 import { ScaleBand, ScaleLinear, scaleBand, scaleLinear } from 'd3-scale'
 
 export default class Scales {
   bandScale: ScaleBand<string>
   linearScale: ScaleLinear<number, number>
-  domain: [string, string]
+  domain: Domain
 
-  constructor() {
+  constructor(domain: Domain) {
     this.bandScale = scaleBand()
     this.linearScale = scaleLinear()
-    this.domain = ['dataMin', 'dataMax'] as [string, string]
+    this.domain = domain
   }
 
   public updateRange(canvas: Canvas, direction: 'horizontal' | 'vertical') {

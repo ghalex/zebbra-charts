@@ -12,7 +12,8 @@ const defaultConfig: ChartConfig = {
     bottom: 0,
     left: 0
   },
-  direction: 'horizontal'
+  direction: 'horizontal',
+  domain: ['dataMin', 'dataMax']
 }
 
 export default class Chart {
@@ -26,7 +27,7 @@ export default class Chart {
     this.data = []
     this.layers = []
     this.config = { ...defaultConfig, ...config }
-    this.scales = new Scales()
+    this.scales = new Scales(this.config.domain)
 
     this.changeData(data)
   }
@@ -63,6 +64,7 @@ export default class Chart {
 
   public changeConfig(config: Partial<ChartConfig>) {
     this.config = { ...this.config, ...config }
+    this.scales.domain = this.config.domain
     this.update()
   }
 

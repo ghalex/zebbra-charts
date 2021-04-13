@@ -41,8 +41,10 @@ export interface Canvas {
   height: number
 }
 
+export type Domain = [string | number, string | number]
 export interface ChartConfig {
   size: Size
   margin: Margin
   direction: 'horizontal' | 'vertical'
+  domain: Domain
 }
