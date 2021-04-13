@@ -11,7 +11,8 @@ const defaultConfig: ChartConfig = {
     right: 0,
     bottom: 0,
     left: 0
-  }
+  },
+  direction: 'horizontal'
 }
 
 export default class Chart {
@@ -35,8 +36,8 @@ export default class Chart {
     return {
       x: margin.left,
       y: margin.top,
-      width: size.width + margin.right,
-      height: size.height + margin.bottom
+      width: size.width - margin.right,
+      height: size.height - margin.bottom
     }
   }
 
@@ -72,7 +73,7 @@ export default class Chart {
   public update() {
     const layersData = this.layersData()
 
-    this.scales.updateRange(this.canvas)
+    this.scales.updateRange(this.canvas, this.config.direction)
     this.scales.updateDomain(this.data, layersData)
 
     this.updates.value += 1

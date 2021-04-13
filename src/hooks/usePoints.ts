@@ -11,17 +11,28 @@ export default (dataKey: string): Return => {
   const chart = useChart()
 
   function updatePoints() {
-    const { x, y } = chart.scales
+    const { bandScale, linearScale } = chart.scales
     const values = chart.data.map((d) => d[dataKey]) as number[]
 
-    points.value = values.map((d, i) => {
-      const p: Point = {
-        x: (x(i.toString()) || 0) + x.bandwidth() / 2,
-        y: y(d)
-      }
+    if (chart.config.direction === 'horizontal') {
+      points.value = values.map((d, i) => {
+        const p: Point = {
+          x: (bandScale(i.toString()) || 0) + bandScale.bandwidth() / 2,
+          y: linearScale(d)
+        }
 
-      return p
-    })
+        return p
+      })
+    } else {
+      points.value = values.map((d, i) => {
+        const p: Point = {
+          x: linearScale(d),
+          y: (bandScale(i.toString()) || 0) + bandScale.bandwidth() / 2
+        }
+
+        return p
+      })
+    }
 
     console.log(points.value)
   }

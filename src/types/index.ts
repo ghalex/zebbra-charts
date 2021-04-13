@@ -36,4 +36,5 @@ export interface Canvas {
 export interface ChartConfig {
   size: Size
   margin: Margin
+  direction: 'horizontal' | 'vertical'
 }

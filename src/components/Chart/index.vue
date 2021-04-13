@@ -1,7 +1,8 @@
 <template>
   <div class="zb-chart">
-    <svg :width="canvas.width" :height="canvas.height" :viewBox="`0 0 ${canvas.width} ${canvas.height}`">
+    <svg :width="size.width" :height="size.height" :viewBox="`0 0 ${size.width} ${size.height}`">
       <slot name="layers" />
+      <x-axis />
     </svg>
     <slot name="widgets" />
   </div>
@@ -11,10 +12,11 @@
 import { defineComponent, onMounted, onUnmounted, provide, watch } from 'vue'
 import { ChartConfig, Data } from '@/types'
 import { Chart } from '@/models'
-// import { useChartConfig } from '@/hooks'
+import XAxis from '../XAxis/index.vue'
 
 export default defineComponent({
   name: 'Chart',
+  components: { XAxis },
   props: {
     data: {
       type: Object as () => Data[],
@@ -45,7 +47,7 @@ export default defineComponent({
       console.log('unmounted')
     })
 
-    return { canvas: chart.canvas }
+    return { size: chart.config.size }
   }
 })
 </script>

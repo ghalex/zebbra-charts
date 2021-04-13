@@ -13,20 +13,20 @@ export default class Scales {
     this.domain = ['dataMin', 'dataMax'] as [string, string]
   }
 
-  get x() {
-    return this.bandScale
-  }
-
-  get y() {
-    return this.linearScale
-  }
-
-  public updateRange(canvas: Canvas) {
-    this.bandScale = this.bandScale.copy().range([canvas.x, canvas.width])
-    this.linearScale = this.linearScale
-      .copy()
-      .range([canvas.height, canvas.y])
-      .nice()
+  public updateRange(canvas: Canvas, direction: 'horizontal' | 'vertical') {
+    if (direction === 'horizontal') {
+      this.bandScale = this.bandScale.copy().range([canvas.x, canvas.width])
+      this.linearScale = this.linearScale
+        .copy()
+        .range([canvas.height, canvas.y])
+        .nice()
+    } else {
+      this.bandScale = this.bandScale.copy().range([canvas.y, canvas.height])
+      this.linearScale = this.linearScale
+        .copy()
+        .range([canvas.x, canvas.width])
+        .nice()
+    }
   }
 
   public updateDomain(data: Data[], layersData: number[]) {
