@@ -9,18 +9,18 @@
       stroke-linejoin="round"
       stroke-linecap="round"
     />
-    <!-- <g v-if="dot">
+    <g v-if="dot">
       <circle
-        :fill="i === mouseIdx.x ? dotActiveProps.fill : dotProps.fill"
-        :stroke="i === mouseIdx.x ? dotActiveProps.stroke : dotProps.stroke"
+        :fill="i === mouse.index ? dotActiveProps.fill : dotProps.fill"
+        :stroke="i === mouse.index ? dotActiveProps.stroke : dotProps.stroke"
         :stroke-width="dotProps.strokeWidth"
-        :r="i === mouseIdx.x ? dotActiveProps.r : dotProps.r"
+        :r="i === mouse.index ? dotActiveProps.r : dotProps.r"
         v-for="(c, i) in points"
         :key="i"
         :cx="c.x"
         :cy="c.y"
       />
-    </g> -->
+    </g>
   </Layer>
 </template>
 
@@ -28,7 +28,7 @@
 import { computed, defineComponent } from 'vue'
 import { line, curveLinear, curveStep, curveNatural, curveMonotoneX } from 'd3-shape'
 import { Point } from '@/types'
-import { usePoints } from '@/hooks'
+import { useMouse, usePoints } from '@/hooks'
 import Layer from '../Layer/index.vue'
 
 export default defineComponent({
@@ -65,7 +65,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    // const data = useData(props.dataKey)
+    const mouse = useMouse()
     const lineType = {
       normal: curveLinear,
       natural: curveNatural,
@@ -94,7 +94,7 @@ export default defineComponent({
       ...props.activeDot
     }))
 
-    return { d, dotProps, dotActiveProps }
+    return { d, mouse, points, dotProps, dotActiveProps }
   }
 })
 </script>

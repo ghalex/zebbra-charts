@@ -33,8 +33,6 @@ export default (dataKey: string): Return => {
         return p
       })
     }
-
-    console.log(points.value)
   }
 
   watch(chart.updates, () => {

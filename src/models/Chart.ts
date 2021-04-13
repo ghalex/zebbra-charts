@@ -61,6 +61,11 @@ export default class Chart {
     this.update()
   }
 
+  public changeConfig(config: Partial<ChartConfig>) {
+    this.config = { ...this.config, ...config }
+    this.update()
+  }
+
   public dataKeys(): string[] {
     return r.uniq(getCol('dataKey', this.layers))
   }

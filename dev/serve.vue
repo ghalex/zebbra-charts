@@ -8,6 +8,7 @@
     </Chart>
     <div>
       <button @click="add">Add Data</button>
+      <button @click="updateConfig">Update Config</button>
     </div>
   </div>
 </template>
@@ -23,8 +24,8 @@ export default defineComponent({
     const data = ref(plByMonth)
     const config = ref<Partial<ChartConfig>>({
       margin: {
-        left: 20,
-        top: 0,
+        left: 40,
+        top: 20,
         right: 20,
         bottom: 20
       },
@@ -41,7 +42,16 @@ export default defineComponent({
       data.value = [...data.value, val]
     }
 
-    return { data, config, add }
+    function updateConfig() {
+      const newConfig: Partial<ChartConfig> = {
+        ...config.value,
+        direction: config.value.direction === 'horizontal' ? 'vertical' : 'horizontal'
+      }
+
+      config.value = newConfig
+    }
+
+    return { data, config, add, updateConfig }
   }
 })
 </script>
