@@ -4,75 +4,55 @@
 </template>
 
 <script lang="ts">
-import * as r from 'ramda'
+// import * as r from 'ramda'
+// import { format } from 'd3-format'
 import { computed, defineComponent, ref, watch } from 'vue'
 import { select } from 'd3-selection'
 import { axisBottom, axisLeft } from 'd3-axis'
-import { format } from 'd3-format'
 import { useChart } from '@/hooks'
 
 export default defineComponent({
   name: 'Axis',
   props: {
-    type: {
-      type: String as () => 'band' | 'linear',
-      default: 'band'
-    },
     position: {
       type: String as () => 'bottom' | 'left',
       default: 'bottom'
     },
-    dataKey: {
-      type: String,
-      default: 'name'
-    },
-    ticks: {
-      type: Number,
-      default: -1
-    },
-    tickValues: {
-      type: Array,
-      default: () => null
-    },
-    format: {
-      type: [String, Function],
-      default: ',.0f'
+    isPrimary: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
     const el = ref(null)
     const chart = useChart()
-    const formatFn = r.is(String, props.format) ? format(props.format as string) : (props.format as any)
+
     const axis = computed(() => {
       return props.position === 'bottom' ? axisBottom : axisLeft
     })
+
     const canvas = computed(() => {
       return chart.canvas
     })
 
-    function drawBandAxis() {
+    function drawAxis() {
       if (chart.data.length > 0) {
-        const { bandScale } = chart.scales
-        const ax: any = axis.value(bandScale).tickFormat((_, index: number) => {
-          return chart.data.map((val) => val[props.dataKey])[index] as string
-        })
+        const { primary, secondary } = chart.scales
+        const current = props.isPrimary ? primary : secondary
+        const config = props.isPrimary ? primary.config : secondary.config
 
-        select(el.value).call(ax)
-      }
-    }
+        const ax: any = axis.value(current.scale).ticks(5)
 
-    function drawLinearAxis() {
-      if (chart.data.length > 0) {
-        const { linearScale } = chart.scales
-        const ax: any = axis.value(linearScale).tickFormat(formatFn)
-        const size = chart.config.direction === 'horizontal' ? chart.canvas.height : chart.canvas.width
+        if (config.format) {
+          ax.tickFormat(config.format)
+        }
 
-        if (props.ticks > -1) {
-          ax.ticks(props.ticks)
-        } else if (props.tickValues) {
-          ax.tickValues(props.tickValues)
-        } else {
-          ax.ticks(Math.round(size / 65))
+        if (config.ticks !== undefined) {
+          ax.ticks(config.ticks)
+        }
+
+        if (config.tickValues !== undefined) {
+          ax.tickValues(config.tickValues)
         }
 
         select(el.value).call(ax)
@@ -82,25 +62,15 @@ export default defineComponent({
       return null
     }
 
-    function draw() {
-      if (props.type === 'band') {
-        drawBandAxis()
-      }
-
-      if (props.type === 'linear') {
-        drawLinearAxis()
-      }
-    }
-
     watch(
-      () => props.type,
+      () => props.isPrimary,
       () => {
-        draw()
+        drawAxis()
       }
     )
 
     watch(chart.updates, () => {
-      draw()
+      drawAxis()
     })
 
     return { el, canvas }

@@ -8,18 +8,22 @@
       @mouseout="onMouseOut"
     >
       <slot name="layers" />
-      <axis :type="direction === 'horizontal' ? 'band' : 'linear'" position="bottom" />
-      <axis :type="direction === 'horizontal' ? 'linear' : 'band'" position="left" />
+      <axis position="bottom" :isPrimary="direction === 'horizontal'" />
+      <axis position="left" :isPrimary="direction === 'vertical'" />
     </svg>
     <slot name="widgets" />
+    <div class="zb-chart-toolbar">
+      <button @click="onTest">Test</button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, provide, watch, ref, reactive } from 'vue'
-import { ChartConfig, Data } from '@/types'
+import { defineComponent, onMounted, onUnmounted, provide, watch, reactive } from 'vue'
+import { ChartAxis, ChartConfig, Data, Direction, Margin, Size } from '@/types'
 import { Chart } from '@/models'
 import { pointer } from 'd3-selection'
+import { bisectCenter } from 'd3-array'
 import Axis from '../Axis/index.vue'
 
 export default defineComponent({
@@ -30,6 +34,30 @@ export default defineComponent({
       type: Object as () => Data[],
       default: []
     },
+    margin: {
+      type: Object as () => Margin,
+      default: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      },
+      required: false
+    },
+    size: {
+      type: Object as () => Size,
+      default: () => ({ width: 500, height: 400 }),
+      required: false
+    },
+    direction: {
+      type: String as () => Direction,
+      default: 'horizontal',
+      required: false
+    },
+    axis: {
+      type: Object as () => ChartAxis,
+      required: false
+    },
     config: {
       type: Object as () => Partial<ChartConfig>,
       default: {}
@@ -37,8 +65,7 @@ export default defineComponent({
   },
   setup(props) {
     const chart = new Chart(props.data, props.config)
-    const size = ref({ width: 500, height: 400 })
-    const direction = ref(props.config.direction)
+
     const mouse = reactive({
       index: -1,
       position: { x: 0, y: 0 },
@@ -52,7 +79,7 @@ export default defineComponent({
     watch(
       () => props.data,
       () => {
-        chart.changeData(props.data)
+        if (chart) chart.changeData(props.data)
       },
       { immediate: true }
     )
@@ -61,17 +88,25 @@ export default defineComponent({
     watch(
       () => props.config,
       () => {
-        chart.changeConfig(props.config)
-
-        size.value = chart.config.size
-        direction.value = chart.config.direction
+        if (chart) chart.changeConfig(props.config)
       }
     )
 
-    onMounted(() => {
-      console.log('mounted')
-    })
+    watch(
+      () => [props.direction, props.size, props.margin, props.axis],
+      () => {
+        if (chart)
+          chart.changeConfig({
+            direction: props.direction,
+            size: props.size,
+            margin: props.margin,
+            axis: props.axis
+          })
+      },
+      { immediate: true }
+    )
 
+    onMounted(() => {})
     onUnmounted(() => {
       console.log('unmounted')
     })
@@ -85,25 +120,53 @@ export default defineComponent({
       mouse.hover = true
       mouse.position = { x: pointer(e)[0], y: pointer(e)[1] }
 
-      const { bandScale } = chart.scales
-      const band = bandScale.bandwidth()
+      const { primary } = chart.scales
+      const keys = chart.getKeys(0)
+      const vals = chart.getData(keys) as number[]
 
-      let delta = mouse.position.x - chart.canvas.x
-
-      if (chart.config.direction === 'vertical') {
-        delta = mouse.position.y - chart.canvas.y
+      if (chart.config.direction === 'horizontal') {
+        if (primary.type === 'band') {
+          const band = primary.bandwidth()
+          const delta = mouse.position.x - chart.canvas.x
+          mouse.index = Math.round((delta + band / 2) / band) - 1
+        } else {
+          mouse.index = bisectCenter(vals, primary.scale.invert(mouse.position.x))
+        }
+      } else {
+        if (primary.type === 'band') {
+          const band = primary.bandwidth()
+          const delta = mouse.position.y - chart.canvas.y
+          mouse.index = Math.round((delta + band / 2) / band) - 1
+        } else {
+          mouse.index = bisectCenter(vals, primary.scale.invert(mouse.position.y))
+        }
       }
-
-      mouse.index = Math.round((delta + band / 2) / band) - 1
     }
 
-    return { size, direction, onMouseMove, onMouseOut }
+    function onTest() {
+      if (chart) {
+        const ticks = chart.scales.primary.ticks()
+        console.log(ticks)
+      }
+    }
+
+    return { onMouseMove, onMouseOut, onTest }
   }
 })
 </script>
 
 <style>
+.zb-chart {
+  position: relative;
+}
+
 .zb-chart svg {
   border: 1px solid red;
+}
+
+.zb-chart-toolbar {
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 </style>

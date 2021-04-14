@@ -49,24 +49,19 @@ export default defineComponent({
     const yLines = ref<number[]>([])
 
     function updateXLines() {
-      const { bandScale, linearScale } = chart.scales
+      const { primary, secondary } = chart.scales
+      const current = chart.config.direction === 'horizontal' ? secondary : primary
 
-      if (chart.config.direction === 'horizontal') {
-        const ticks = linearScale.ticks(Math.round(chart.canvas.height / 60))
-        xLines.value = ticks.map((v) => linearScale(v))
-      } else {
-        xLines.value = chart.data.map((_, i) => (bandScale(i.toString()) || 0) + bandScale.bandwidth() / 2)
-      }
+      const ticks = current.ticks()
+      xLines.value = current.map(ticks)
     }
 
     function updateYLines() {
-      const { bandScale, linearScale } = chart.scales
-      if (chart.config.direction !== 'horizontal') {
-        const ticks = linearScale.ticks(Math.round(chart.canvas.height / 60))
-        yLines.value = ticks.map((v) => linearScale(v))
-      } else {
-        yLines.value = chart.data.map((_, i) => (bandScale(i.toString()) || 0) + bandScale.bandwidth() / 2)
-      }
+      const { primary, secondary } = chart.scales
+      const current = chart.config.direction === 'horizontal' ? primary : secondary
+
+      const ticks = current.ticks()
+      yLines.value = current.map(ticks)
     }
 
     watch(chart.updates, () => {

@@ -1,5 +1,5 @@
 <template>
-  <Layer type="line" :dataKey="dataKey" :color="stroke">
+  <Layer :dataKeys="dataKeys" type="line">
     <path
       :d="d"
       fill="none"
@@ -55,9 +55,9 @@ export default defineComponent({
         r: 5
       })
     },
-    dataKey: {
-      type: String,
-      default: 'value'
+    dataKeys: {
+      type: Object as () => [string, string],
+      required: true
     },
     type: {
       type: String as () => 'normal' | 'step' | 'natural' | 'monotone',
@@ -75,7 +75,7 @@ export default defineComponent({
       monotone: curveMonotoneX
     }
 
-    const { points } = usePoints(props.dataKey)
+    const { points } = usePoints(props.dataKeys)
 
     function updateLine() {
       let type = lineType[props.type]

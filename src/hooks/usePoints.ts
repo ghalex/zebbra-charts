@@ -1,43 +1,42 @@
 import { ref, Ref, watch } from 'vue'
 import { Point } from '@/types'
+import * as r from 'ramda'
 import useChart from './useChart'
 
 interface Return {
   points: Ref<Point[]>
 }
 
-export default (dataKey: string): Return => {
+export default (dataKeys: [string, string]): Return => {
   const points = ref<Point[]>([])
   const chart = useChart()
 
   function updatePoints() {
-    const { bandScale, linearScale } = chart.scales
-    const values = chart.data.map((d) => d[dataKey]) as number[]
+    const [primaryKey, secondaryKey] = dataKeys
+    const {
+      scales: { primary, secondary },
+      data
+    } = chart
 
-    if (chart.config.direction === 'horizontal') {
-      points.value = values.map((d, i) => {
-        const p: Point = {
-          x: (bandScale(i.toString()) || 0) + bandScale.bandwidth() / 2,
-          y: linearScale(d)
-        }
+    const primaryVals = primary.map(data.map((d) => d[primaryKey])).filter((val) => !isNaN(val))
+    const secondaryValues = secondary.map(data.map((d) => d[secondaryKey])).filter((val) => !isNaN(val))
 
-        return p
-      })
-    } else {
-      points.value = values.map((d, i) => {
-        const p: Point = {
-          x: linearScale(d),
-          y: (bandScale(i.toString()) || 0) + bandScale.bandwidth() / 2
-        }
-
-        return p
-      })
+    if (primaryVals.length === secondaryValues.length) {
+      if (chart.config.direction === 'horizontal') {
+        points.value = r.zipWith((x, y) => ({ x, y }), primaryVals, secondaryValues)
+      } else {
+        points.value = r.zipWith((x, y) => ({ x, y }), secondaryValues, primaryVals)
+      }
     }
   }
 
-  watch(chart.updates, () => {
-    updatePoints()
-  })
+  watch(
+    chart.updates,
+    () => {
+      updatePoints()
+    },
+    { immediate: true }
+  )
 
   return {
     points

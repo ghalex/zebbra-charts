@@ -1,5 +1,5 @@
 <template>
-  <Layer type="bar" :dataKey="dataKey" :color="fill">
+  <Layer :dataKeys="dataKeys" type="bar">
     <text v-if="bars.length === 0">No Data</text>
     <rect
       v-for="(bar, i) in bars"
@@ -15,7 +15,7 @@
   </Layer>
 </template>
 
-<script>
+<script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useBars } from '@/hooks'
 import { is } from 'ramda'
@@ -41,13 +41,13 @@ export default defineComponent({
       type: Number,
       default: 100
     },
-    dataKey: {
-      type: String,
-      default: 'value'
+    dataKeys: {
+      type: Object as () => [string, string],
+      required: true
     }
   },
   setup(props) {
-    const { bars } = useBars(props.dataKey, { maxWidth: props.maxWidth })
+    const { bars } = useBars(props.dataKeys, { maxWidth: props.maxWidth })
     const getFill = computed(() => {
       if (is(Function, props.fill)) {
         return props.fill

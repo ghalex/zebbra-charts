@@ -27,10 +27,12 @@ export interface Data {
   [key: string]: string | number
 }
 
-export type LayerType = 'bar' | 'line' | 'area' | 'points'
+export type LayerType = 'bar' | 'line' | 'area' | 'points' | 'custom'
 
 export interface Layer {
-  dataKey: string
+  id: string
+  dataKeys: [string, string]
+  type: LayerType
   props: any
 }
 
@@ -42,9 +44,25 @@ export interface Canvas {
 }
 
 export type Domain = [string | number, string | number]
+export type Direction = 'horizontal' | 'vertical'
+export type ScaleType = 'band' | 'linear'
+
+export interface AxisConfig {
+  domain: Domain
+  type: ScaleType
+  format?: (val: string) => string
+  ticks?: number
+  tickValues?: any[]
+}
+
+export interface ChartAxis {
+  primary: AxisConfig
+  secondary: AxisConfig
+}
+
 export interface ChartConfig {
   size: Size
   margin: Margin
-  direction: 'horizontal' | 'vertical'
-  domain: Domain
+  direction: Direction
+  axis: ChartAxis
 }

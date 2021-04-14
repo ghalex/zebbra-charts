@@ -7,32 +7,30 @@
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted } from 'vue'
 import { useChart } from '@/hooks'
+import { LayerType } from '@/types'
 
 export default defineComponent({
   name: 'Layer',
   props: {
     type: {
-      type: String,
+      type: String as () => LayerType,
+      default: 'custom'
+    },
+    dataKeys: {
+      type: Object as () => [string, string],
       required: true
-    },
-    dataKey: {
-      type: String,
-      default: 'value'
-    },
-    color: {
-      type: String
     }
   },
   setup(props) {
     const chart = useChart()
-    // const { addLayer } = useLayers()
+    const id = new Date().getTime().toString()
 
     onMounted(() => {
-      chart.addLayer({ dataKey: props.dataKey, props: {} })
+      chart.addLayer({ id, type: props.type, dataKeys: props.dataKeys, props: {} })
     })
 
     onUnmounted(() => {
-      chart.removeLayer({ dataKey: props.dataKey, props: {} })
+      chart.removeLayer(id)
     })
     return {}
   }
