@@ -12,9 +12,9 @@
       <axis position="left" :isPrimary="direction === 'vertical'" />
     </svg>
     <slot name="widgets" />
-    <div class="zb-chart-toolbar">
+    <!-- <div class="zb-chart-toolbar">
       <button @click="onTest">Test</button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -143,14 +143,14 @@ export default defineComponent({
       }
     }
 
-    function onTest() {
-      if (chart) {
-        const ticks = chart.scales.primary.ticks()
-        console.log(ticks)
-      }
-    }
+    // function onTest() {
+    //   if (chart) {
+    //     const ticks = chart.scales.primary.ticks()
+    //     console.log(ticks)
+    //   }
+    // }
 
-    return { onMouseMove, onMouseOut, onTest }
+    return { onMouseMove, onMouseOut }
   }
 })
 </script>

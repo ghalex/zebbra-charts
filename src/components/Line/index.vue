@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, watch, ref } from 'vue'
+import { computed, defineComponent, watch, ref, onMounted } from 'vue'
 import { line, curveLinear, curveStepAfter, curveNatural, curveMonotoneX, curveMonotoneY } from 'd3-shape'
 import { Point } from '@/types'
 import { useChart, useMouse, usePoints } from '@/hooks'
@@ -105,6 +105,8 @@ export default defineComponent({
 
     watch(points, () => updateLine())
     watch(chart.updates, () => updateLine())
+
+    onMounted(() => {})
 
     return { d, mouse, points, dotProps, dotActiveProps }
   }

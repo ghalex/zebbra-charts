@@ -1,12 +1,18 @@
 <template>
-  <div id="app">
+  <div>
     <div>
       <Chart :data="data" :axis="axis" :margin="margin" :direction="direction">
         <template #layers>
           <Grid strokeDasharray="2,2" />
-          <Bar :dataKeys="['name', 'pl']" fill="red" />
-          <Bar :dataKeys="['name', 'avg']" />
-          <Line :dataKeys="['name', 'avg']" type="step" />
+          <Bar :dataKeys="['name', 'pl']" fill="#48CAE4" />
+          <Bar :dataKeys="['name', 'avg']" fill="#00b4d8" />
+          <Line :dataKeys="['name', 'avg']" stroke="#e76f51" type="step" />
+        </template>
+        <template #widgets>
+          <Tooltip
+            borderColor="#48CAE4"
+            :config="{ pl: { color: '#48CAE4' }, avg: { label: 'averange', color: '#e76f51' } }"
+          />
         </template>
       </Chart>
       <div>
@@ -14,7 +20,7 @@
         <button @click="updateConfig">Update Config</button>
       </div>
     </div>
-    <div>
+    <div class="mt-2">
       <Chart
         :data="data2"
         :axis="{ primary: { type: 'linear', domain: ['0', 'dataMax'] } }"
@@ -24,6 +30,9 @@
         <template #layers>
           <Grid strokeDasharray="2,2" />
           <Line :dataKeys="['nbOfTrades', 'pl']" type="monotone" />
+        </template>
+        <template #widgets>
+          <Tooltip />
         </template>
       </Chart>
       <div>
@@ -43,7 +52,6 @@ export default defineComponent({
     const data = ref(plByMonth)
     const data2 = ref(r.sortBy(r.prop('nbOfTrades'), trades))
 
-    console.log(data2.value)
     const direction = ref('horizontal')
     const margin = ref({
       left: 0,
@@ -97,3 +105,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.mt-2 {
+  margin-top: 1rem;
+}
+</style>

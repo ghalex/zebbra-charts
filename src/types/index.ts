@@ -66,3 +66,9 @@ export interface ChartConfig {
   direction: Direction
   axis: ChartAxis
 }
+
+export interface Payload {
+  color: string
+  label: string
+  values: any
+}
