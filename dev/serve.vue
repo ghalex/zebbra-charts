@@ -11,7 +11,11 @@
         <template #widgets>
           <Tooltip
             borderColor="#48CAE4"
-            :config="{ pl: { color: '#48CAE4' }, avg: { label: 'averange', color: '#e76f51' } }"
+            :config="{
+              name: { hide: true },
+              pl: { color: '#48CAE4' },
+              avg: { label: 'averange', color: '#e76f51' }
+            }"
           />
         </template>
       </Chart>

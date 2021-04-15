@@ -1,9 +1,13 @@
 import * as r from 'ramda'
-import { ref, watch } from 'vue'
+import { Ref, ref, watch } from 'vue'
 import { Rectangle } from '@/types'
 import useChart from './useChart'
 
-export default (dataKeys: [string, string], props = { maxWidth: 100 }): any => {
+export interface BarsReturn {
+  bars: Ref<Rectangle[]>
+}
+
+export default (dataKeys: [string, string], props = { maxWidth: 100 }): BarsReturn => {
   const bars = ref<Rectangle[]>([])
   const chart = useChart()
 

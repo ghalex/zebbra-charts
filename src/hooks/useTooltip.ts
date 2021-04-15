@@ -1,5 +1,5 @@
 import { ref, watch, computed, Ref } from 'vue'
-import * as r from 'ramda'
+// import * as r from 'ramda'
 import useChart from './useChart'
 import useMouse from './useMouse'
 
@@ -36,11 +36,11 @@ export default (): Return => {
       }
     }
 
-    const dKeys = chart.getKeys(1)
+    // const dKeys = chart.getKeys(1)
     const d = chart.data[mouse.index]
 
     if (d) {
-      payload.value = r.pick(dKeys, d)
+      payload.value = d
     }
   })
 

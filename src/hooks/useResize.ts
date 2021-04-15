@@ -1,12 +1,12 @@
 import { onMounted, onUnmounted, ref, Ref } from 'vue'
 
-interface Return {
+export interface ResizeReturn {
   width: Ref<number>
   height: Ref<number>
   onResize: (fn: () => void) => void
 }
 
-export default (el: Ref): Return => {
+export default (el: Ref): ResizeReturn => {
   const width = ref(0)
   const height = ref(0)
 

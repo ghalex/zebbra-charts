@@ -3,11 +3,11 @@ import { Point } from '@/types'
 import * as r from 'ramda'
 import useChart from './useChart'
 
-interface Return {
+export interface PointsReturn {
   points: Ref<Point[]>
 }
 
-export default (dataKeys: [string, string]): Return => {
+export default (dataKeys: [string, string]): PointsReturn => {
   const points = ref<Point[]>([])
   const chart = useChart()
 

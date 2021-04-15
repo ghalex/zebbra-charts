@@ -90,21 +90,27 @@ export default defineComponent({
     })
 
     const formatValue = (val: any, formatter: any) => {
-      return is(String, formatter) ? format(formatter as string)(val) : formatter(val)
+      return is(Function, formatter) ? formatter(val) : is(Number, val) ? format(formatter as string)(val) : val
     }
 
     const items = computed(() => {
-      return Object.keys(payload.value).map((key) => {
-        const config = { ...{ label: key, format: props.format, color: '#8884d8' }, ...props.config[key] }
+      return Object.keys(payload.value)
+        .map((key) => {
+          const config = {
+            ...{ label: key, format: props.format, color: '#8884d8', hide: false },
+            ...props.config[key]
+          }
 
-        return {
-          key,
-          label: config.label,
-          value: payload.value[key],
-          valueFormatted: formatValue(payload.value[key], config.format),
-          color: config.color
-        }
-      })
+          return {
+            key,
+            label: config.label,
+            value: payload.value[key],
+            valueFormatted: formatValue(payload.value[key], config.format),
+            color: config.color,
+            hide: config.hide
+          }
+        })
+        .filter((i) => !i.hide)
     })
 
     watch(chart.updates, () => {

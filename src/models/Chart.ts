@@ -30,7 +30,7 @@ export default class Chart {
   layers: Layer[]
   config: ChartConfig
   scales: Scales
-  updates: Ref<number> = ref(0)
+  updates: Ref<number>
 
   constructor(data: Data[], config: Partial<ChartConfig>) {
     this.data = data
@@ -40,8 +40,7 @@ export default class Chart {
       defaultConfig
     ) as any
     this.scales = new Scales(this.config.axis)
-
-    console.log('chart created')
+    this.updates = ref(0)
   }
 
   get canvas(): Canvas {

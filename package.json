@@ -1,6 +1,6 @@
 {
-  "name": "@zebbra/charts",
-  "version": "1.0.0",
+  "name": "vue3-charts",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/lib.ssr.js",
   "browser": "dist/lib.esm.js",
