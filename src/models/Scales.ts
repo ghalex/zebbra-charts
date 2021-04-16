@@ -1,4 +1,6 @@
 import { Canvas, ChartAxis, Data, Direction } from '@/types'
+import { getCol } from '@/utils'
+import { Series } from 'd3-shape'
 import * as r from 'ramda'
 import Scale from './Scale'
 
@@ -29,10 +31,8 @@ export default class Scales {
     }
   }
 
-  public updateDomain(data: Data[], keys: Array<[string, string]>) {
-    const getRow = (idx: number): string[] => r.uniq(r.map((v) => r.nth(idx, v) || '', keys)).filter((x) => x !== '')
-
-    this.primary.updateDomain(data, getRow(0))
-    this.secondary.updateDomain(data, getRow(1))
+  public updateDomain(data: Data[], stackedData: Series<any, string>[], keys: Array<[string, string]>) {
+    this.primary.updateDomain(data, stackedData, getCol(0, keys))
+    this.secondary.updateDomain(data, stackedData, getCol(1, keys))
   }
 }

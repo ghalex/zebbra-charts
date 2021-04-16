@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted } from 'vue'
+import { defineComponent, inject, onMounted, onUnmounted } from 'vue'
 import { useChart } from '@/hooks'
 import { LayerType } from '@/types'
 
@@ -24,9 +24,10 @@ export default defineComponent({
   setup(props) {
     const chart = useChart()
     const id = new Date().getTime().toString()
+    const extraProps = inject('layerProps', {})
 
     onMounted(() => {
-      chart.addLayer({ id, type: props.type, dataKeys: props.dataKeys, props: {} })
+      chart.addLayer({ id, type: props.type, dataKeys: props.dataKeys, props: extraProps })
     })
 
     onUnmounted(() => {

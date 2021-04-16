@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, inject } from 'vue'
 import { useBars } from '@/hooks'
 import { is } from 'ramda'
 import Layer from '../Layer/index.vue'
@@ -47,7 +47,8 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const { bars } = useBars(props.dataKeys, { maxWidth: props.maxWidth })
+    const { stacked } = inject('layerProps', { stacked: false })
+    const { bars } = useBars(props.dataKeys, { maxWidth: props.maxWidth, stacked, type: 'bar' })
     const getFill = computed(() => {
       if (is(Function, props.fill)) {
         return props.fill

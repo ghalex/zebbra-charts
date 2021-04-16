@@ -1,8 +1,16 @@
-import { Canvas, ChartConfig, Data, Layer, LayerType } from '@/types'
-import { Scales } from '.'
 import * as r from 'ramda'
 import { ref, Ref } from 'vue'
+import { Scales } from '.'
 import { getCol } from '@/utils'
+import {
+  stack,
+  stackOrderAscending,
+  stackOrderDescending,
+  stackOrderReverse,
+  stackOrderNone,
+  stackOrderInsideOut
+} from 'd3-shape'
+import { Canvas, ChartConfig, Data, Layer, LayerType } from '@/types'
 
 const defaultConfig: ChartConfig = {
   size: { width: 500, height: 400 },
@@ -54,6 +62,12 @@ export default class Chart {
     }
   }
 
+  public getStackedData(keys: string[]) {
+    return stack()
+      .keys(keys)
+      .order(stackOrderNone)(this.data as any)
+  }
+
   public changeData(data: Data[]) {
     this.data = data
     this.update('data')
@@ -90,8 +104,28 @@ export default class Chart {
     return keys.reduce((arr, key) => arr.concat(getCol(key, this.data)), [])
   }
 
-  public getKeys(idx: number = -1) {
-    const keys = this.layers.map((l) => l.dataKeys)
+  public getKeys(idx: number = -1, type: string | null = null) {
+    const keys = this.layers
+      .filter((l) => {
+        if (type) return l.type === type
+        return true
+      })
+      .map((l) => l.dataKeys)
+
+    if (idx === -1) {
+      return keys
+    }
+
+    return getCol(idx, keys)
+  }
+
+  public getStackedKeys(idx: number = -1, type: string | null = null) {
+    const keys = this.layers
+      .filter((l) => {
+        if (type) return l.type === type && l.props.stacked
+        return l.props.stacked
+      })
+      .map((l) => l.dataKeys)
 
     if (idx === -1) {
       return keys
@@ -101,8 +135,9 @@ export default class Chart {
   }
 
   public update(_: string) {
+    const stackedData = this.getStackedData(this.getStackedKeys(1))
     this.scales.updateRange(this.canvas, this.config.direction)
-    this.scales.updateDomain(this.data, this.getKeys())
+    this.scales.updateDomain(this.data, stackedData, this.getKeys())
 
     this.updates.value += 1
     // console.log('update from:', from)

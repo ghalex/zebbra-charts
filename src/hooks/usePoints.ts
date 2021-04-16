@@ -1,25 +1,23 @@
+import * as r from 'ramda'
 import { ref, Ref, watch } from 'vue'
 import { Point } from '@/types'
-import * as r from 'ramda'
+import { Series } from 'd3-shape'
 import useChart from './useChart'
 
 export interface PointsReturn {
   points: Ref<Point[]>
 }
 
-export default (dataKeys: [string, string]): PointsReturn => {
+export default (dataKeys: [string, string], props = { stacked: false, type: 'line' }): PointsReturn => {
   const points = ref<Point[]>([])
   const chart = useChart()
+  const { stacked, type } = props
 
-  function updatePoints() {
-    const [primaryKey, secondaryKey] = dataKeys
-    const {
-      scales: { primary, secondary },
-      data
-    } = chart
+  function updatePoints(key: string, values: Series<any, string>) {
+    const { primary, secondary } = chart.scales
 
-    const primaryVals = primary.map(data.map((d) => d[primaryKey])).filter((val) => !isNaN(val))
-    const secondaryValues = secondary.map(data.map((d) => d[secondaryKey])).filter((val) => !isNaN(val))
+    const primaryVals = primary.map(values.map((v) => v.data[key])).filter((val) => !isNaN(val))
+    const secondaryValues = secondary.map(values.map((v) => v[1])).filter((val) => !isNaN(val))
 
     if (primaryVals.length === secondaryValues.length) {
       if (chart.config.direction === 'horizontal') {
@@ -30,10 +28,21 @@ export default (dataKeys: [string, string]): PointsReturn => {
     }
   }
 
+  function update() {
+    const keys = chart.getStackedKeys(1, type)
+    const [primaryKey, secondaryKey] = dataKeys
+    const stack = chart.getStackedData(stacked ? keys : [dataKeys[1]])
+    const data = stack.find((s) => s.key === secondaryKey)
+
+    if (data) {
+      updatePoints(primaryKey, data)
+    }
+  }
+
   watch(
     chart.updates,
     () => {
-      updatePoints()
+      update()
     },
     { immediate: true }
   )

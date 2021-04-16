@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, watch, ref, onMounted } from 'vue'
+import { computed, defineComponent, watch, ref, onMounted, inject } from 'vue'
 import { line, curveLinear, curveStepAfter, curveNatural, curveMonotoneX, curveMonotoneY } from 'd3-shape'
 import { Point } from '@/types'
 import { useChart, useMouse, usePoints } from '@/hooks'
@@ -65,6 +65,7 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const { stacked } = inject('layerProps', { stacked: false })
     const mouse = useMouse()
     const chart = useChart()
     const d = ref<string | null>('')
@@ -75,7 +76,7 @@ export default defineComponent({
       monotone: curveMonotoneX
     }
 
-    const { points } = usePoints(props.dataKeys)
+    const { points } = usePoints(props.dataKeys, { stacked, type: 'line' })
 
     function updateLine() {
       let type = lineType[props.type]

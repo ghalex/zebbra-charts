@@ -1,5 +1,5 @@
 <template>
-  <div class="zb-chart">
+  <div class="chart">
     <svg
       :width="size.width"
       :height="size.height"
@@ -7,11 +7,17 @@
       @mousemove="onMouseMove"
       @mouseout="onMouseOut"
     >
-      <slot name="layers" />
-      <axis position="bottom" :isPrimary="direction === 'horizontal'" />
-      <axis position="left" :isPrimary="direction === 'vertical'" />
+      <g class="layers">
+        <slot name="layers" />
+      </g>
+      <g class="axis">
+        <axis position="bottom" :isPrimary="direction === 'horizontal'" />
+        <axis position="left" :isPrimary="direction === 'vertical'" />
+      </g>
     </svg>
-    <slot name="widgets" />
+    <div class="widgets">
+      <slot name="widgets" />
+    </div>
     <!-- <div class="zb-chart-toolbar">
       <button @click="onTest">Test</button>
     </div> -->
@@ -156,17 +162,7 @@ export default defineComponent({
 </script>
 
 <style>
-.zb-chart {
+.chart {
   position: relative;
-}
-
-.zb-chart svg {
-  border: 1px solid red;
-}
-
-.zb-chart-toolbar {
-  position: absolute;
-  right: 10px;
-  top: 10px;
 }
 </style>

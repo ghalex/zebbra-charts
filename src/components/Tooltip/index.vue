@@ -21,7 +21,7 @@
       v-else
       class="tooltip-line-horizontal"
       :style="{
-        width: canvas.width - 20 + 'px'
+        width: canvas.width - 40 + 'px'
       }"
     />
   </div>
@@ -65,14 +65,14 @@ export default defineComponent({
     const style = computed(() => {
       if (direction.value !== 'horizontal') {
         return {
-          top: position.value.y + 0.5 + 'px',
+          top: position.value.y - 0.5 + 'px',
           left: canvas.value.x + 'px'
         }
       }
 
       return {
         top: canvas.value.y + 'px',
-        left: position.value.x + 0.5 + 'px'
+        left: position.value.x - 0.5 + 'px'
       }
     })
     const styleContent = computed(() => {

@@ -1,7 +1,8 @@
 import { AxisConfig, Data, ScaleType } from '@/types'
 import { getCol } from '@/utils'
-import { extent } from 'd3-array'
+import { extent, max, min } from 'd3-array'
 import { scaleBand, scaleLinear } from 'd3-scale'
+import { Series } from 'd3-shape'
 
 export default class Scale {
   scale: any
@@ -45,8 +46,9 @@ export default class Scale {
     this.scale = this.scale.copy().range(range)
   }
 
-  public updateDomain(data: Data[], keys: string[]) {
-    const domain = this.config.type === 'band' ? this.categoryDomain(data, keys) : this.numericDomain(data, keys)
+  public updateDomain(data: Data[], stackedData: Series<any, string>[], keys: string[]) {
+    const domain =
+      this.config.type === 'band' ? this.categoryDomain(data, keys) : this.numericDomain(data, stackedData, keys)
     this.scale = this.scale.copy().domain(domain)
   }
 
@@ -81,10 +83,14 @@ export default class Scale {
     return Array.from(new Set(values))
   }
 
-  private numericDomain(data: Data[], keys: string[]) {
+  private numericDomain(data: Data[], stackedData: Series<any, string>[], keys: string[]) {
     const { domain } = this.config
-    const values = keys.reduce((arr, key) => arr.concat(getCol(key, data)), [])
-    const [dataMin, dataMax] = extent(Array.from(new Set(values)))
+    const values: number[] = keys.reduce((arr, key) => arr.concat(getCol(key, data)), [])
+
+    const valueMax: number = max(stackedData, (arr) => max(arr, (x) => max(x))) || 0
+    const valueMin: number = min(stackedData, (arr) => min(arr, (x) => min(x))) || 0
+
+    const [dataMin, dataMax] = extent(Array.from(new Set(values.concat([valueMin, valueMax]))))
     const yMin = eval(`
       let dataMin = ${dataMin || 0}
       ${domain[0]}
